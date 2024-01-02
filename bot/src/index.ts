@@ -1,36 +1,45 @@
 import { Telegraf, Markup, Context } from 'telegraf';
-import { message } from 'telegraf/filters';
 
 import { appConfig } from './config'
+import { getMainText, getWelcomeText } from './text/text.service';
 
 const bot = new Telegraf(appConfig.tgBotApi);
 
-const help = (ctx: Context) => {
+const mainContent = async (ctx: Context) => {
   const keyboard = Markup.inlineKeyboard([
     Markup.button.callback('✅ Подключить VPN', 'connect'),
   ]);
-
-  ctx.telegram.sendMessage(
-    ctx.from?.id || 0,
-    'Главное меню',
-    keyboard,  
-  );
-}
-
-bot.start((ctx) => {
-  const keyboard = Markup.inlineKeyboard([
-    Markup.button.callback('👉 Главное меню', 'help'),
-  ]);
+  
+  const mainText = await getMainText();
   
   ctx.telegram.sendMessage(
     ctx.from?.id || 0,
-    'Главное меню',
-    keyboard,  
+    mainText,
+    {
+      ...keyboard,
+      parse_mode: 'HTML',
+    },
+  );
+}
+
+bot.start(async (ctx) => {
+  const keyboard = Markup.inlineKeyboard([
+    Markup.button.callback('👉 Главное меню', 'main'),
+  ]);
+  
+  const wellcomeText = await getWelcomeText();
+
+  ctx.telegram.sendMessage(
+    ctx.from?.id || 0,
+    wellcomeText,
+    {
+      ...keyboard,
+      parse_mode: 'HTML',
+    },
   );
 });
 
-bot.help(help);
-bot.action('help', help);
+bot.action('main', mainContent);
 
 bot.action('connect', (ctx) => {
   const keyboard = Markup.inlineKeyboard([

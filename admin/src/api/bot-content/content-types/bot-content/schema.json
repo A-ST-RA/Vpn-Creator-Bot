@@ -4,14 +4,18 @@
   "info": {
     "singularName": "bot-content",
     "pluralName": "bot-contents",
-    "displayName": "BotContent"
+    "displayName": "BotContent",
+    "description": ""
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
-    "Index": {
+    "Welcome": {
+      "type": "richtext"
+    },
+    "Main": {
       "type": "richtext"
     }
   }
