@@ -1,0 +1,18 @@
+{
+  "kind": "singleType",
+  "collectionName": "bot_contents",
+  "info": {
+    "singularName": "bot-content",
+    "pluralName": "bot-contents",
+    "displayName": "BotContent"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Index": {
+      "type": "richtext"
+    }
+  }
+}

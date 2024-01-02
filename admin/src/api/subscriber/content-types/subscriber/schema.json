@@ -4,7 +4,8 @@
   "info": {
     "singularName": "subscriber",
     "pluralName": "subscribers",
-    "displayName": "Subscriber"
+    "displayName": "Subscriber",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
@@ -18,6 +19,10 @@
     "dateToAlive": {
       "type": "date",
       "required": true
+    },
+    "accepted": {
+      "type": "boolean",
+      "default": false
     }
   }
 }
