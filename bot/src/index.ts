@@ -45,7 +45,7 @@ bot.action('connect', (ctx) => {
   const keyboard = Markup.inlineKeyboard([
     [Markup.button.callback('🌟 24 месяца: 99 ₽/мес', '24,99')],
     [Markup.button.callback('12 месяцев: 149 ₽/мес', '24,99')],
-    [Markup.button.callback('👉 Главное меню', 'help')],
+    [Markup.button.callback('👉 Главное меню', 'main')],
   ]);
 
   ctx.telegram.sendMessage(
