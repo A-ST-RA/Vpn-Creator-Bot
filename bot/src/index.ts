@@ -1,3 +1,4 @@
+import { message } from 'telegraf/filters';
 import { Telegraf, Markup, Context } from 'telegraf';
 
 import { appConfig } from './config'
@@ -40,6 +41,12 @@ bot.start(async (ctx) => {
 });
 
 bot.action('main', mainContent);
+
+bot.on(message('photo'), (ctx) => {
+  const fromId = ctx.from.id;
+
+  ctx.reply('Чек получен, ожидайте проверки')
+})
 
 bot.action('connect', (ctx) => {
   const keyboard = Markup.inlineKeyboard([
