@@ -42,6 +42,7 @@ export const typographyReplacer = (text: string) => {
     .replace(/<h[1-6]>/gm, '<strong>').replace(/<\/h[1-6]>/gm, '<\/strong>\n')
     .replace(/<span style=".*">/gm, '<span class="tg-spoiler">').replace(/<\/span *>/gm, '</span>')
     .replace(/<hr>/gm, '\n\n')
+    .replace(/<br>/gm, '\n')
     .replace(/<(\/|)(table|tbody|tr|td|td colspan=".*" rowspan=".*")>/gm, '');
 
   return data;
