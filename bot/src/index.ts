@@ -103,9 +103,11 @@ bot.on(message('document'), (ctx) => {
 })
 
 bot.action(/buy /, (ctx) => {
+  // console.log(ctx.callbackQuery.message);
+  
   console.log('buy');
   
-  ctx.reply(`Заявка создана, отправьте чек по оплате из приложения банка для проверки платежа`);
+  ctx.reply('Заявка создана, отправьте чек по оплате из приложения банка для проверки платежа');
 });
 
 bot.action('connect', async (ctx) => {
