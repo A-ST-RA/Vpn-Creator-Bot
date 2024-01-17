@@ -782,6 +782,10 @@ export interface ApiBotContentBotContent extends Schema.SingleType {
   attributes: {
     Welcome: Attribute.RichText;
     Main: Attribute.RichText;
+    howToVpn: Attribute.RichText;
+    help: Attribute.RichText;
+    helpLink: Attribute.String;
+    priceList: Attribute.Component<'shared.price', true>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<

@@ -17,6 +17,20 @@
     },
     "Main": {
       "type": "richtext"
+    },
+    "howToVpn": {
+      "type": "richtext"
+    },
+    "help": {
+      "type": "richtext"
+    },
+    "helpLink": {
+      "type": "string"
+    },
+    "priceList": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.price"
     }
   }
 }

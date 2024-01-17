@@ -2,7 +2,7 @@ import { message } from 'telegraf/filters';
 import { Telegraf, Markup, Context } from 'telegraf';
 
 import { appConfig } from './config'
-import { getMainText, getWelcomeText } from './text/text.service';
+import { getHelpContent, getHowToVpnText, getMainText, getPriceList, getWelcomeText } from './text/text.service';
 
 const bot = new Telegraf(appConfig.tgBotApi);
 
@@ -10,6 +10,8 @@ bot.start(async (ctx) => {
   const keyboard = Markup.inlineKeyboard([
     Markup.button.callback('👉 Главное меню', 'main'),
   ]);
+  
+  console.log('start');
   
   const wellcomeText = await getWelcomeText();
 
@@ -33,6 +35,9 @@ bot.action('main', async (ctx: Context) => {
   
   const mainText = await getMainText();
   
+  console.log('main');
+  
+  
   ctx.telegram.sendMessage(
     ctx.from?.id || 0,
     mainText,
@@ -45,12 +50,14 @@ bot.action('main', async (ctx: Context) => {
 });
 
 bot.action('help', async (ctx: Context) => {
+  const {helpText, helpLink} = await getHelpContent();
+  
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.url('🤵‍♂️ Перейти в чат технической поддержки', 'https://t.me/A_ST_RA')],
+    [Markup.button.url('🤵‍♂️ Перейти в чат технической поддержки', helpLink)],
     [Markup.button.callback('👉 Главное меню', 'main')],
   ]);
-
-  const helpText = '<strong>Помощь</strong>\n\nесли вам нужна помощь, можете обратиться к нам в поддержку @A_ST_RA';
+  
+  console.log('help');
   
   ctx.telegram.sendMessage(
     ctx.from?.id || 0,
@@ -69,8 +76,11 @@ bot.action('howToVpn', async (ctx: Context) => {
     [Markup.button.url('🍎 WireGuard для Iphone', 'https://apps.apple.com/ru/app/wireguard/id1441195209')],
     [Markup.button.callback('👉 Главное меню', 'main')],
   ]);
+  
+  console.log('howToVpn');
+  
 
-  const howToVpnText = '<strong>Как включить VPN</strong>\n\nТут инструкция о том как запустить VPN';
+  const howToVpnText = await getHowToVpnText();
   
   ctx.telegram.sendMessage(
     ctx.from?.id || 0,
@@ -87,21 +97,38 @@ bot.action('howToVpn', async (ctx: Context) => {
 bot.on(message('document'), (ctx) => {
   const fromId = ctx.from.id;
 
+  console.log('document');
+  
   ctx.reply('Чек получен, ожидайте проверки')
 })
 
 bot.action(/buy /, (ctx) => {
-  console.log(ctx.callbackQuery.message);
-  ctx.reply('Заявка создана, отправьте чек по оплате из приложения банка для проверки платежа');
+  console.log('buy');
+  
+  ctx.reply(`Заявка создана, отправьте чек по оплате из приложения банка для проверки платежа`);
 });
 
-bot.action('connect', (ctx) => {
+bot.action('connect', async (ctx) => {
+  const priceList = await getPriceList();
+  
+  const buyKeyboardData = priceList?.map((el, idx) => {
+    let text = `${el.duration} мес: ${el.cost} ₽/мес`;
+    let callback = `buy ${el.duration},${el.cost}`;
+
+    if (idx === 0) {
+      text = `🌟 ${text}`;
+    }
+
+    return [Markup.button.callback(text, callback)];
+  })
+
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('🌟 24 месяца: 99 ₽/мес', 'buy 24,99')],
-    [Markup.button.callback('12 месяцев: 149 ₽/мес', 'buy 12,149')],
+    ...buyKeyboardData as any,
     [Markup.button.callback('👉 Главное меню', 'main')],
   ]);
 
+  console.log('connect');
+  
   ctx.telegram.sendMessage(
     ctx.from?.id || 0,
     'Чем больше срок, на который вы покупаете <strong>Название Вашего Бота</strong>, тем больше выгода',

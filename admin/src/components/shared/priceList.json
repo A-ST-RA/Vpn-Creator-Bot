@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_shared_priceList",
+  "info": {
+    "displayName": "priceList",
+    "icon": "briefcase"
+  },
+  "options": {},
+  "attributes": {
+    "pricesList": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.price"
+    }
+  }
+}

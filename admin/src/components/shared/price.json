@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_shared_prices",
+  "info": {
+    "displayName": "Price",
+    "icon": "chartPie"
+  },
+  "options": {},
+  "attributes": {
+    "cost": {
+      "type": "integer"
+    },
+    "duration": {
+      "type": "integer"
+    }
+  }
+}
