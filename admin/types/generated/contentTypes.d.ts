@@ -818,6 +818,11 @@ export interface ApiSubscriberSubscriber extends Schema.CollectionType {
     telegramId: Attribute.String & Attribute.Required;
     dateToAlive: Attribute.Date & Attribute.Required;
     accepted: Attribute.Boolean & Attribute.DefaultTo<false>;
+    accessGained: Attribute.Boolean & Attribute.DefaultTo<false>;
+    vpnKeyId: Attribute.String;
+    check: Attribute.Media;
+    totalCost: Attribute.String;
+    period: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<

@@ -1,8 +1,10 @@
 import axios from "axios";
 import { appConfig } from "./config";
 
-const api = axios.create({
+export const backendApi = axios.create({
   baseURL: appConfig.backendUrl,
 });
 
-export default api;
+export const vpnApi = axios.create({
+  baseURL: appConfig.vpnUrl,
+});

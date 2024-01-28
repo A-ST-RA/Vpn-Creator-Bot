@@ -23,6 +23,27 @@
     "accepted": {
       "type": "boolean",
       "default": false
+    },
+    "accessGained": {
+      "type": "boolean",
+      "default": false
+    },
+    "vpnKeyId": {
+      "type": "string"
+    },
+    "check": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "files"
+      ]
+    },
+    "totalCost": {
+      "type": "string"
+    },
+    "period": {
+      "type": "string"
     }
   }
 }

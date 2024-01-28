@@ -3,6 +3,7 @@ import { Telegraf, Markup, Context } from 'telegraf';
 
 import { appConfig } from './config'
 import { getHelpContent, getHowToVpnText, getMainText, getPriceList, getWelcomeText } from './text/text.service';
+import { createApplication } from './applications/applications.service';
 
 const bot = new Telegraf(appConfig.tgBotApi);
 
@@ -10,8 +11,6 @@ bot.start(async (ctx) => {
   const keyboard = Markup.inlineKeyboard([
     Markup.button.callback('👉 Главное меню', 'main'),
   ]);
-  
-  console.log('start');
   
   const wellcomeText = await getWelcomeText();
 
@@ -35,9 +34,6 @@ bot.action('main', async (ctx: Context) => {
   
   const mainText = await getMainText();
   
-  console.log('main');
-  
-  
   ctx.telegram.sendMessage(
     ctx.from?.id || 0,
     mainText,
@@ -57,8 +53,6 @@ bot.action('help', async (ctx: Context) => {
     [Markup.button.callback('👉 Главное меню', 'main')],
   ]);
   
-  console.log('help');
-  
   ctx.telegram.sendMessage(
     ctx.from?.id || 0,
     helpText,
@@ -77,9 +71,6 @@ bot.action('howToVpn', async (ctx: Context) => {
     [Markup.button.callback('👉 Главное меню', 'main')],
   ]);
   
-  console.log('howToVpn');
-  
-
   const howToVpnText = await getHowToVpnText();
   
   ctx.telegram.sendMessage(
@@ -97,17 +88,20 @@ bot.action('howToVpn', async (ctx: Context) => {
 bot.on(message('document'), (ctx) => {
   const fromId = ctx.from.id;
 
-  console.log('document');
-  
   ctx.reply('Чек получен, ожидайте проверки')
 })
 
-bot.action(/buy /, (ctx) => {
-  // console.log(ctx.callbackQuery.message);
-  
-  console.log('buy');
-  
-  ctx.reply('Заявка создана, отправьте чек по оплате из приложения банка для проверки платежа');
+bot.action(/buy /, async (ctx: any) => {
+  const userId = ctx.callbackQuery.from.id;
+  const [period, cost] = ctx.callbackQuery.data.split(' ')[1].split(',');
+
+  const result = await createApplication(userId, period, cost);
+  if (result) {
+    ctx.reply('Заявка создана, отправьте чек по оплате из приложения банка для проверки платежа');
+    return;
+  }
+
+  ctx.reply('Произошла ошибка, повторите попытку позже');
 });
 
 bot.action('connect', async (ctx) => {
@@ -129,8 +123,6 @@ bot.action('connect', async (ctx) => {
     [Markup.button.callback('👉 Главное меню', 'main')],
   ]);
 
-  console.log('connect');
-  
   ctx.telegram.sendMessage(
     ctx.from?.id || 0,
     'Чем больше срок, на который вы покупаете <strong>Название Вашего Бота</strong>, тем больше выгода',
