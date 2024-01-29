@@ -31,18 +31,13 @@
     "vpnKeyId": {
       "type": "string"
     },
-    "check": {
-      "type": "media",
-      "multiple": false,
-      "required": false,
-      "allowedTypes": [
-        "files"
-      ]
-    },
     "totalCost": {
       "type": "string"
     },
     "period": {
+      "type": "string"
+    },
+    "check": {
       "type": "string"
     }
   }

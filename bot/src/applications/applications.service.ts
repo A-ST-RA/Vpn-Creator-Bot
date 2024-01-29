@@ -20,3 +20,34 @@ export const createApplication = async (telegramId: number, period: number, cost
     return false;
   }
 };
+
+export const sendCheck = async (telegramId: number, checkUrl: string) => {
+  try {
+    await backendApi.post('/subscribers/update/' + telegramId, {
+      data: {
+        check: checkUrl,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
+export const setKeyToUser = async (telegramId: string, keyId: string) => {
+  await backendApi.post('/subscribers/update/' + telegramId, {
+    data: {
+      accessGained: true,
+      vpnKeyId: keyId,
+    }
+  });
+}
+
+export const getNotAccessedToVpnClients = async () => {
+  const { data: { data } } = await backendApi.get(`/subscribers?filters[accepted][$eq]=true&filters[accessGained][$eq]=false`);
+
+  return data?.map((el: { id: number; attributes: { telegramId: any; }; }) => ({
+    id: el.id,
+    telegramId: el.attributes.telegramId,
+  }));
+};

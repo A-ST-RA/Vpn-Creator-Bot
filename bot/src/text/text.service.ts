@@ -21,12 +21,30 @@ export const getMainText = async (): Promise<string> => {
   }
 }
 
+export const getPhoneNumberText = async (): Promise<string> => {
+  try {
+    const { data } = await backendApi.get('/bot-content');
+    return typographyReplacer(data.data.attributes.phoneNumber || defaultData.phoneNumber);
+   } catch {  
+    return typographyReplacer(defaultData.phoneNumber);
+  }
+};
+
 export const getHowToVpnText = async (): Promise<string> => {
   try {
     const { data } = await backendApi.get('/bot-content');
     return typographyReplacer(data.data.attributes.howToVpn || defaultData.howToVpn);
    } catch {  
-    return typographyReplacer(defaultData.Main);
+    return typographyReplacer(defaultData.howToVpn);
+  }
+}
+
+export const getPriceSelectorText = async (): Promise<string> => {
+  try {
+    const { data } = await backendApi.get('/bot-content');
+    return typographyReplacer(data.data.attributes.priceSelect || defaultData.priceSelect);
+   } catch {  
+    return typographyReplacer(defaultData.priceSelect);
   }
 }
 

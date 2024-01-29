@@ -2,10 +2,15 @@ import { message } from 'telegraf/filters';
 import { Telegraf, Markup, Context } from 'telegraf';
 
 import { appConfig } from './config'
-import { getHelpContent, getHowToVpnText, getMainText, getPriceList, getWelcomeText } from './text/text.service';
-import { createApplication } from './applications/applications.service';
+import { getHelpContent, getHowToVpnText, getMainText, getPhoneNumberText, getPriceList, getPriceSelectorText, getWelcomeText } from './text/text.service';
+import { createApplication, getNotAccessedToVpnClients, sendCheck, setKeyToUser } from './applications/applications.service';
+import { makeVpnKey } from './vpn/vpn.service';
+
+var cron = require('node-cron');
 
 const bot = new Telegraf(appConfig.tgBotApi);
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 bot.start(async (ctx) => {
   const keyboard = Markup.inlineKeyboard([
@@ -66,8 +71,10 @@ bot.action('help', async (ctx: Context) => {
 
 bot.action('howToVpn', async (ctx: Context) => {
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.url('📱 WireGuard для Android', 'https://play.google.com/store/apps/details?id=com.wireguard.android&hl=ru&gl=US&pli=1')],
-    [Markup.button.url('🍎 WireGuard для Iphone', 'https://apps.apple.com/ru/app/wireguard/id1441195209')],
+    [Markup.button.url('📱 Outline для Android', 'https://play.google.com/store/apps/details?id=org.outline.android.client&hl=ru&gl=US&pli=1')],
+    [Markup.button.url('🖥️ Outline для Windows', 'https://getoutline.org/ru/get-started/#step-3')],
+    [Markup.button.url('🖥️ Outline для Mac', 'https://getoutline.org/ru/get-started/#step-3')],
+    [Markup.button.url('🍎 Outline для Iphone', 'https://apps.apple.com/ru/app/outline-app/id1356177741')],
     [Markup.button.callback('👉 Главное меню', 'main')],
   ]);
   
@@ -84,9 +91,12 @@ bot.action('howToVpn', async (ctx: Context) => {
   );
 });
 
-
-bot.on(message('document'), (ctx) => {
+bot.on(message('document'), async (ctx) => {
+  const { href } = await ctx.telegram.getFileLink(ctx.message.document.file_id);
   const fromId = ctx.from.id;
+
+  await sendCheck(fromId, href);
+  bot.telegram.sendMessage(appConfig.adminTelegramId, `Пришел новый чек\nid телеграм для поиска в админ панели: ${fromId}`)
 
   ctx.reply('Чек получен, ожидайте проверки')
 })
@@ -94,10 +104,11 @@ bot.on(message('document'), (ctx) => {
 bot.action(/buy /, async (ctx: any) => {
   const userId = ctx.callbackQuery.from.id;
   const [period, cost] = ctx.callbackQuery.data.split(' ')[1].split(',');
+  const phoneNumber = await getPhoneNumberText();
 
   const result = await createApplication(userId, period, cost);
   if (result) {
-    ctx.reply('Заявка создана, отправьте чек по оплате из приложения банка для проверки платежа');
+    ctx.sendMessage(`Заявка создана\n\nПроизведите оплату в размере ${+period * +cost}₽\nНомер для перевода ${phoneNumber}\n\nДалее отправьте чек из приложения банка для проверки платежа`);
     return;
   }
 
@@ -125,7 +136,7 @@ bot.action('connect', async (ctx) => {
 
   ctx.telegram.sendMessage(
     ctx.from?.id || 0,
-    'Чем больше срок, на который вы покупаете <strong>Название Вашего Бота</strong>, тем больше выгода',
+    await getPriceSelectorText(),
     {
       ...keyboard,
       parse_mode: 'HTML',
@@ -134,7 +145,21 @@ bot.action('connect', async (ctx) => {
   );
 });
 
-bot.launch()
+cron.schedule('* * * * *', async () => {
+  const data = await getNotAccessedToVpnClients();
+
+  await Promise.all(data?.map(async (el: { telegramId: string | number; id: number; }) => {
+    const { accessUrl, id } = await makeVpnKey();
+    bot.telegram.sendMessage(el.telegramId, 'Проверка пройдена в следующем сообщении вы получите ссылку на VPN')
+    setTimeout(() => {
+      bot.telegram.sendMessage(el.telegramId, accessUrl)
+    }, 1000)
+    await setKeyToUser(el.telegramId.toString(), id);
+    return {};
+  }));
+});
+
+bot.launch();
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));

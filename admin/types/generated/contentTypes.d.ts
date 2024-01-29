@@ -786,6 +786,8 @@ export interface ApiBotContentBotContent extends Schema.SingleType {
     help: Attribute.RichText;
     helpLink: Attribute.String;
     priceList: Attribute.Component<'shared.price', true>;
+    priceSelect: Attribute.RichText;
+    phoneNumber: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -820,9 +822,9 @@ export interface ApiSubscriberSubscriber extends Schema.CollectionType {
     accepted: Attribute.Boolean & Attribute.DefaultTo<false>;
     accessGained: Attribute.Boolean & Attribute.DefaultTo<false>;
     vpnKeyId: Attribute.String;
-    check: Attribute.Media;
     totalCost: Attribute.String;
     period: Attribute.String;
+    check: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
